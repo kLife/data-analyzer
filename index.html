@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>解析スクリプト</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style>
+		#output-area {
+			width: 99%;
+			height: 450px;
+		}
+	</style>
+	<script src="./js/lib/jquery-1.10.2.min.js"></script>
+	<script src="./js/lib/DataStream.js"></script>
+	<script src="./js/lib/encoding.js"></script>
+	<script src="./js/lib/jcode.js"></script>
+	<script src="./js/lib/escape.js"></script>
+
+	<script src="./js/analyze-item.js"></script>
+	<script src="./js/analyze-scenario-item.js"></script>
+	<script src="./js/analyze-text.js"></script>
+	<script src="./js/create-item-data.js"></script>
+	<script src="./js/create-monster-data.js"></script>
+
+	<script src="./js/analyze-ud8.js"></script>
+	<script src="./js/analyze-skill.js"></script>
+	<script src="./js/analyze-skill2.js"></script>
+	<script src="./js/analyze-job.js"></script>
+	<script src="./js/analyze-job2.js"></script>
+
+	<script src="./js/main.js"></script>
+</head>
+<body>
+    <input id="file-input" type="file" />
+    <label for="check-compress"><input type="checkbox" id="check-compress" checked />圧縮<label><br />
+    <textarea id="output-area"></textarea>
+    <div id="output-file"></div>
+</body>
+</html>

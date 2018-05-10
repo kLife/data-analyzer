@@ -116,12 +116,16 @@ function analyzeData(loadedFile) {
 	ds.endianness = DataStream.LITTLE_ENDIAN;
 
 	switch (loadedFile.name) {
-		// NOTE: アイテムデータを更新するときはanalyze_itemのほうをコメントアウトする
-		//case "item.dat": output = analyze_item(ds); break;
-		// case "senario_item.dat": output = analyze_scenario_item(ds, 1000000, 1); break;
-		case "test.ud8": output = analyze_ud8(ds); break;
+		case "item.dat": output = analyze_item(ds); break;
+
+		// 解析用
+		// case "senario_item.dat":
+		// case "senario_item-en.dat": output = analyze_scenario_item(ds, 1000000, 1); break;
+		// アイテムデータ更新用　
 		case "senario_item.dat":
-		case "senario_item-en.dat": output = create_ItemData(ds, 100, 1); break;
+		case "senario_item-en.dat": output = create_ItemData(ds); break;
+
+		case "test.ud8": output = analyze_ud8(ds); break;
 		case "skill.dat": output = analyze_skill(ds); break;
 		case "skill2.dat": output = analyze_skill2(ds); break;
 		case "job.dat": output = analyze_job(ds); break;

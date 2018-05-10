@@ -3,7 +3,7 @@
 // analyze scenario item
 function analyze_scenario_item(ds, max, skip) {
 	decodeBuffer(ds, 0x48);
-
+	
 	var i;
 	var output = {};
 	var option;
@@ -322,7 +322,7 @@ function analyze_scenario_item(ds, max, skip) {
 	}
 
 	//return output;
-	return output3;
+	return output;
 }
 
 // flags

@@ -5,7 +5,7 @@ function create_ItemData(ds) {
 	decodeBuffer(ds, 0x48);
 	//downloadFile(ds);
 
-	var output = analyze_scenario_item(ds, 100000, 0);
+	var output = analyze_scenario_item(ds, 100000, 1);
 	var output2 = [];
 	var iData = output["ItemDatas"];
 	var i, j, k;
@@ -35,12 +35,15 @@ function create_ItemData(ds) {
 		type: "GET",
 		dataType: "json",
 		async: false,
-		url: "./data/ItemList.json?a"
+		url: "./data/ItemList.json"
 	}).done(function(data) {
 		jsonData = data;
 	});
 
+	console.log("a");
+	console.log(iData);
 	console.log(jsonData);
+
 
 	if (iData.length !== jsonData.length) {
 		console.log("dat %d, json %d", iData.length, jsonData.length);
@@ -83,10 +86,10 @@ function create_ItemData(ds) {
 		//}).replace("<n>", "</font>");
 
 		// Name Check
-		// var r_namecheck = /<("[^"]*"|'[^']*'|[^'">])*>/g;
-		// if (item["Name"].replace(r_namecheck, "") != jsonData[i]["itemName"].replace(r_namecheck, "")) {
-		// 	console.log(i, item["Name"], jsonData[i]["itemName"]);
-		// }
+		var r_namecheck = /<("[^"]*"|'[^']*'|[^'">])*>/g;
+		if (item["Name"].replace(r_namecheck, "") != jsonData[i]["itemName"].replace(r_namecheck, "")) {
+			//console.log(i, item["Name"], jsonData[i]["itemName"]);
+		}
 
 		// Rank
 		item["Rank"] = "N";
@@ -103,20 +106,6 @@ function create_ItemData(ds) {
 			item["Rank"] = "Q";
 		}
 
-		if ((n0("RankFlags") & 0xc000) == 0x0000) {
-			//item["Rank"] = "N";
-		}
-		if ((n0("RankFlags") & 0x4000) == 0x4000) {
-			item["Rank"] = "U";
-		}
-		if ((n0("RankFlags") & 0x8000) == 0x8000) {
-			item["Rank"] = "NX";
-		}
-		// else {
-		// 	item["Rank"] = "N";
-		// 	//console.log(item["Name"], n0("RankFlags") & 0xF000)
-		// }
-
 		// Grade
 		item["Grade"] = "N";
 		if (jsonData[i].isDX) {
@@ -125,12 +114,6 @@ function create_ItemData(ds) {
 		if (jsonData[i].isUM) {
 			item["Grade"] = "UM";
 		}
-
-		// if ((n0("RankFlags") & 0x0F00) == 0x0000) {
-		// 	// N
-		// } else {
-		// 	console.log(item["Name"], n0("RankFlags") & 0x0F00)
-		// }
 
 		// At Pram
 		item["AtParam"] = {
@@ -246,61 +229,43 @@ function create_ItemData(ds) {
 		// Jobs
 		item["Job"] = [];
 
-		// var key;
-		// var jobName = "";
-		// var JobTable = {
-		// 	"剣士": 0,
-		// 	"戦士": 1,
-		// 	"ウィザード": 2,
-		// 	"ウルフマン": 3,
-		// 	"ビショップ": 4,
-		// 	"追放天使": 5,
-		// 	"シーフ": 6,
-		// 	"武道家": 7,
-		// 	"ランサー": 8,
-		// 	"アーチャー": 9,
-		// 	"ビーストテイマー": 10,
-		// 	"サマナー": 11,
-		// 	"プリンセス": 12,
-		// 	"リトルウィッチ": 13,
-		// 	"ネクロマンサー": 14,
-		// 	"悪魔": 15,
-		// 	"霊術師": 16,
-		// 	"闘士": 17,
-		// 	"光奏師": 18,
-		// 	"獣人": 19,
-		// 	"メイド": 20,
-		// 	"黒魔術師": 21,
-		// 	"マスケッティア": 22,
-		// 	"男性キャラクター専用": 40,
-		// 	"女性キャラクター専用": 41
-		// };
-		//
-		// for (key in jsonData[i]["JobAvailable"]) {
-		// 	jobName = jsonData[i]["JobAvailable"][key];
-		// 	if (JobTable[jobName] !== undefined) {
-		// 		item["Job"].push(JobTable[jobName]);
-		// 	} else {
-		// 		console.log(i + ": JobTalbeにありません。JobTableを更新してください");
-		// 	}
-		// }
+		var key;
+		var jobName = "";
+		var JobTable = {
+			"剣士": 0,
+			"戦士": 1,
+			"ウィザード": 2,
+			"ウルフマン": 3,
+			"ビショップ": 4,
+			"追放天使": 5,
+			"シーフ": 6,
+			"武道家": 7,
+			"ランサー": 8,
+			"アーチャー": 9,
+			"ビーストテイマー": 10,
+			"サマナー": 11,
+			"プリンセス": 12,
+			"リトルウィッチ": 13,
+			"ネクロマンサー": 14,
+			"悪魔": 15,
+			"霊術師": 16,
+			"闘士": 17,
+			"光奏師": 18,
+			"獣人": 19,
+			"メイド": 20,
+			"黒魔術師": 21,
+			"マスケッティア": 22,
+			"男性キャラクター専用": 40,
+			"女性キャラクター専用": 41
+		};
 
-		if ((n("SexFlags") & 0x30) == 0x10) {
-			item["Job"].push(40)
-		} else if ((n("SexFlags") & 0x30) == 0x20) {
-			item["Job"].push(41)
-		} else if ((n("SexFlags") & 0x30) == 0x30 || (n("SexFlags") & 0x30) == 0x00) {
-			if (n("JobFlags") !== 0xFFFFFFFF && n("JobFlags") !== 0x7FFFFF ) {
-				var flag = ("00000000000000000000000000000000" + n("JobFlags").toString(2)).split("").reverse().join("")
-				for (k = 0; k < 32; k++) {
-					if (flag[k] == "1") {
-						item["Job"].push(k)
-					}
-				}
+		for (key in jsonData[i]["JobAvailable"]) {
+			jobName = jsonData[i]["JobAvailable"][key];
+			if (JobTable[jobName] !== undefined) {
+				item["Job"].push(JobTable[jobName]);
+			} else {
+				console.log(i + ": JobTalbeにありません。JobTableを更新してください");
 			}
-		} else {
-			// エラー
-			console.log(item["Name"], n("SexFlags") & 0xF0);
 		}
 
 		// NxIdがあったら追加する

@@ -5,6 +5,18 @@ REDSTONEのデータを解析するツールです。
 
 プログラムもデザインもひどいのでいつか直します。
 
+# 使い方
+ファイルを選択するとJSONデータを吐き出します
+
+対応ファイルは以下（ほぼ未解析）
+- item.dat
+- senario/item.dat
+- text.dat
+- skill.dat
+- job.dat
+
+アイテムデータは2つありますが、senario以下にあるitem.datは `senario_item.dat` に名前を書き換えてください。
+
 # 暗号と複合
 
 ## 暗号化ファイル

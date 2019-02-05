@@ -93,6 +93,13 @@ function create_ItemData(ds) {
 
 		// Rank
 		item["Rank"] = "N";
+
+		const isDX = d["Flags1-2"][7] == 1;
+		const isUM = d["Flags2-1"][0] == 1;
+		const isNx = d["Flags3-2"][0] == 1;
+		const isNxable =  d["Flags3-2"][1] == 1; // 錬成可能フラグ
+
+		// console.log(d["Flags1-1"], d["Flags1-2"], jsonData[i].isU)
 		if (jsonData[i].isU && !jsonData[i].isNX) {
 			item["Rank"] = "U";
 		}

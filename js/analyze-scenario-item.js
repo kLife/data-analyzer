@@ -10,21 +10,39 @@ function analyze_scenario_item(ds, max, skip) {
 	var startPosition = 0;
 	var isAnalizeMode = true;
 
-	var p = function() {
+	// 未解析データ
+	var unanalyzedData = function() {
 		if (!isAnalizeMode) {
 			return "_";
 		}
-		return "_" + (ds.position - startPosition);
+		return "_unanalyzed_" + (ds.position - startPosition);
 	}
+
+	// 値は判明したがなんの値かわからないデータ
+	var unknownData = function() {
+		if (!isAnalizeMode) {
+			return "_";
+		}
+		return "_unknown_" + (ds.position - startPosition);
+	}
+
+	// なにもないデータ
+	var nullData = function() {
+		if (!isAnalizeMode) {
+			return "_";
+		}
+		return "_null_" + (ds.position - startPosition);
+	}
+
 	var old = 0;
 
 	// header
 	output["Header"] = {};
 	output["Header"]["dataType"] = arrayToString(ds.readUint8Array(64)).replace(/(%0|ÿ)+/g, "_");
-	output["Header"][p()] = ds.readUint32();
-	output["Header"][p()] = ds.readUint32();
+	output["Header"][unanalyzedData()] = ds.readUint32();
+	output["Header"][unanalyzedData()] = ds.readUint32();
 	output["Header"]["itemDataLength"] = ds.readUint32();
-	output["Header"][p()] = ds.readUint32();
+	output["Header"][unanalyzedData()] = ds.readUint32();
 
 	// item datas
 	output["ItemDatas"] = [];
@@ -35,18 +53,17 @@ function analyze_scenario_item(ds, max, skip) {
 
 		option["Id"] = ds.readUint32();
 		option["Name"] = arrayToString(ds.readUint8Array(68)).replace(/%0.*/g, "");
-
 		option["AddressData"] = ds.readUint32();
 		option["itemType"] = ds.readUint32();
 
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
-		option["__null"] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
+		option[nullData()] = ds.readUint16();
 
 		option["Price"] = ds.readUint32();
 		option["PriceFormatType"] = ds.readUint16();
@@ -102,8 +119,8 @@ function analyze_scenario_item(ds, max, skip) {
 		option["Option4 ValueIndex1"] = ds.readInt16();
 		option["Option4 ValueIndex2"] = ds.readInt16();
 
-		option["__??"] = ds.readInt16(); // [00, FF]
-		option["__??"] = ds.readInt16(); // [00, FF]
+		option["??????1"] = ds.readInt16(); // [00, FF]
+		option["??????2"] = ds.readInt16(); // [00, FF]
 		option["OpBit1 TextId"] = ds.readInt16();
 		option["OpBit1 Value0"] = ds.readInt16();
 		option["OpBit1 Value1"] = ds.readInt16();
@@ -166,76 +183,79 @@ function analyze_scenario_item(ds, max, skip) {
 		option["OpBit6 Value7"] = ds.readInt16();
 
 		option["PriceFactor"] = ds.readInt16();
-		option["itemPropertyFlags"] = ds.readUint16(); // 使用不可/ベルト可
-		option["RankFlags1"] = convertToBitsArray(ds.readInt8(), 8);
-		option["RankFlags2"] = convertToBitsArray(ds.readInt8(), 8);
+		option["itemPropertyFlags1"] = convertToBitsArray(ds.readUint8(), 8); // 使用不可/ベルト可?
+		option["itemPropertyFlags2"] = convertToBitsArray(ds.readUint8(), 8); // 使用不可/ベルト可?
+		option["Flags1-1"] = convertToBitsArray(ds.readUint8(), 8);
+		option["Flags1-2"] = convertToBitsArray(ds.readUint8(), 8);
 		option["ExpirationDateYear"] = ds.readInt16(); // 有効期限
 		option["ExpirationDateMonth"] = ds.readInt16(); // 有効期限
 		option["ExpirationDateDay"] = ds.readInt16();
 		option["ExpirationDateHour"] = ds.readInt16();
 
-		option["__??"] = ds.readInt16();	// エンチャント系の何かの値
-		option["__??"] = ds.readInt16();	// エンチャント系の何かの値
-		option["__??"] = ds.readInt16();	// エンチャの種類に関する何か
+		option[unknownData()] = ds.readInt16();	// エンチャント系の何かの値
+		option[unknownData()] = ds.readInt16();	// エンチャント系の何かの値
+		option[unknownData()] = ds.readInt16();	// エンチャの種類に関する何か
 		option["EquipColorType??"] = ds.readInt16();
-		option["__??"] = ds.readInt16();	// 常に100
+		option[unknownData()] = ds.readInt16();	// 常に100
 		option["DropFactor"] = ds.readInt16();
-		option["__??"] = ds.readInt16();	// アイテム画像に関するグループ？
+		option["ItemImageGroup?"] = ds.readInt16();	// アイテム画像に関するグループ？
 		option["RankItemGroup"] = ds.readInt16();	// ランクアイテムのグループ
 
 		option["PortalSphereGroup"] = ds.readInt16();	// ポタの種類
 		option["isPortalSpher"] = ds.readInt16();
-		option["__??"] = ds.readInt16();	// 何かのフラグ
-		option["__??"] = ds.readInt16();	// 何かのフラグ
+		option["Flags2-1"] = convertToBitsArray(ds.readUint8(), 8);	// 何かのフラグ(職業？)
+		option["Flags2-2"] = convertToBitsArray(ds.readUint8(), 8);	// 何かのフラグ(職業？)
+		option["Flags2-3"] = convertToBitsArray(ds.readUint8(), 8);	// 何かのフラグ(職業？)
+		option["Flags2-4"] = convertToBitsArray(ds.readUint8(), 8);	// 何かのフラグ(職業？)
 		option["isNotSell"] = ds.readInt16(); // NPC売却禁止？
-		option["__null"] = ds.readInt16();
-		option["__??"] = ds.readInt16();	// ポタのグレード？
-		option["__??"] = ds.readInt8();	// インフィニに関する何か
-		option["__??"] = ds.readInt8();	// 転生指輪などに関する何か
+		option[nullData()] = ds.readInt16();
+		option["portalGrade?"] = ds.readInt16();	// ポタのグレード？
+		option[unknownData()] = ds.readInt8();	// インフィニに関する何か
+		option[unknownData()] = ds.readInt8();	// 転生指輪などに関する何か
 
-		option["__??"] = ds.readInt16();	// 転生指輪などに関する何か
-		option["__??"] = ds.readInt16();	// IFに関する何か
-		option["__??"] = convertToBitsArray(ds.readInt8(), 8);	// 何かのフラグ、IFのレベル？
-		option["__??"] = convertToBitsArray(ds.readInt8(), 8);	// IFの何か
-		option["JobFlags"] = convertToBitsArray(ds.readUint32(), 32);
-		option["__??"] = ds.readInt16();	// IFの細かな種類のフラグ
-		option["__??"] = ds.readInt16(); // 何か、ポタに関する何か
-		option["__??"] = convertToBitsArray(ds.readUint8(), 8);	// 不明、記憶の指輪的な何か
-		option["__??"] = convertToBitsArray(ds.readUint8(), 8); //　不明
+		option[unknownData()] = ds.readInt16();	// 転生指輪などに関する何か
+		option[unknownData()] = ds.readInt16();	// IFに関する何か
+		option[unknownData()] = convertToBitsArray(ds.readInt8(), 8);	// 何かのフラグ、IFのレベル？
+		option[unknownData()] = convertToBitsArray(ds.readInt8(), 8);	// IFの何か
+		option["JobFlags"] = convertToBitsArray(ds.readUint32(), 32); // 職業フラグ？
+		option[unknownData()] = ds.readInt16();	// IFの細かな種類のフラグ
+		option[unknownData()] = ds.readInt16(); // 何か、ポタに関する何か
+		option[unknownData()] = convertToBitsArray(ds.readUint8(), 8);	// 不明、記憶の指輪的な何か
+		option["unknownData()"] = convertToBitsArray(ds.readUint8(), 8); //　不明
 
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option["__??"] = ds.readInt16();	// 植木鉢に関するなにか
-		option["RankFlags1"] = convertToBitsArray(ds.readUint8(), 8);
-		option["RankFlags2"] = convertToBitsArray(ds.readUint8(), 8);
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option["FlowerPot"] = ds.readInt16();	// 植木鉢に関するなにか
+		option["Flags3-1"] = convertToBitsArray(ds.readUint8(), 8);
+		option["Flags3-2"] = convertToBitsArray(ds.readUint8(), 8);
 
-		option["__??"] = ds.readInt16(); // ふいごのなにか
-		option["__??"] = ds.readInt16(); // ふいごとかの何か
-		option["__??"] = ds.readInt16(); // 課金アイテムなどのフラグ？
+		option[unknownData()] = ds.readInt16(); // ふいごのなにか
+		option[unknownData()] = ds.readInt16(); // ふいごとかの何か
+		option[unknownData()] = ds.readInt16(); // 課金アイテムなどのフラグ？
 		option["NxId"] = ds.readInt16();
-		option["__??"] = ds.readInt16(); // 冒険家協会の羅針盤‘初心者専用 のなにか 70
-		option["__??"] = ds.readInt16();	// 冒険家協会の羅針盤‘初心者専用　のなにか 157
-		option["__??"] = ds.readInt16();	// 交換チケットのなにか
-		option["__??"] = ds.readInt16();	// クエストかどうか、コスチュームかどうか
+		option[unknownData()] = ds.readInt16(); // 冒険家協会の羅針盤‘初心者専用 のなにか 70
+		option[unknownData()] = ds.readInt16();	// 冒険家協会の羅針盤‘初心者専用　のなにか 157
+		option[unknownData()] = ds.readInt16();	// 交換チケットのなにか
+		option[unknownData()] = ds.readInt16();	// クエストかどうか、コスチュームかどうか
 
-		option["__??"] = ds.readInt16();	// コスチュームのなにか、なにか
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option[p()] = ds.readInt16();
-		option["__null"] = ds.readInt16();
-		option["__null"] = ds.readInt16();
+		option[unknownData()] = ds.readInt16();	// コスチュームのなにか、なにか
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[unanalyzedData()] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
 
-		option["__null"] = ds.readInt16();
-		option["__null"] = ds.readInt16();
-		option["__null"] = ds.readInt16();
-		option["__null"] = ds.readInt16();
-		option["__null"] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
+		option[nullData()] = ds.readInt16();
 		option["OpNx1 TextId"] = ds.readInt16();
 		option["OpNx1 Value1"] = ds.readInt16();
 		option["OpNx1 Value2"] = ds.readInt16();
@@ -298,8 +318,8 @@ function analyze_scenario_item(ds, max, skip) {
 			Name: itemData["Name"],
 			BitFlags1: itemData["BitFlags1"],
 			BitFlags2: itemData["BitFlags2"],
-			RankFlags1: itemData["RankFlags1"],
-			RankFlags2: itemData["RankFlags2"]
+			"Flags3-1": itemData["Flags3-1"],
+			"Flags3-2": itemData["Flags3-2"]
 		})
 	}
 

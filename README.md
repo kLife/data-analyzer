@@ -47,6 +47,7 @@ REDSTONEのデータを解析するツールです。
 
 ## アイテム画像
 `iconItem.smi` にすべて入っています。
+
 こちらで解説しています。
-http://kou0120.blog.fc2.com/blog-entry-177.html
-http://kou0120.blog.fc2.com/blog-entry-183.html
+- http://kou0120.blog.fc2.com/blog-entry-177.html
+- http://kou0120.blog.fc2.com/blog-entry-183.html
